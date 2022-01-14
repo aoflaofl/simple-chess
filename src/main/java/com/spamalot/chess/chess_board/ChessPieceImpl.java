@@ -46,4 +46,9 @@ class ChessPieceImpl implements ChessPiece {
   public Color getColor() {
     return color;
   }
+
+  @Override
+  public Type getType() {
+    return type;
+  }
 }

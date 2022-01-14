@@ -109,14 +109,55 @@ class ChessPositionImpl implements ChessPosition {
           continue;
         }
         System.out.println(p);
-        ChessMove m = new ChessMoveImpl();
-        m.setPiece(p);
-        m.setFromSquare(r, f);
-        m.setToSquare(r, f);
-        al.add(m);
+
+        switch (p.getType()) {
+          case BISHOP:
+            break;
+          case KING:
+
+            for (int diffRank = -1; diffRank <= 1; diffRank++) {
+              for (int diffFile = -1; diffFile <= 1; diffFile++) {
+                if (diffRank == 0 && diffFile == 0) {
+                  continue;
+                }
+                ChessMove m = chessMoveDoSquareMove(r, f, p, r + diffRank, f + diffFile);
+                al.add(m);
+              }
+            }
+
+            break;
+          case KNIGHT:
+            break;
+          case PAWN:
+            break;
+          case QUEEN:
+            break;
+          case ROOK:
+            break;
+          default:
+            break;
+
+        }
+
       }
     }
     return al;
+  }
+
+  private ChessMove chessMoveDoSquareMove(int r, int f, ChessPiece p, int tr, int tf) {
+    ChessMove move = new ChessMoveImpl();
+    move.setPiece(p);
+    move.setFromSquare(r, f);
+    move.setToSquare(tr, tf);
+    ChessPiece toPiece = cb.getPieceAt(tr, tf);
+    if (toPiece != null) {
+      if (toPiece.getColor() == colorToMove) {
+        return null;
+      } else {
+        move.setCapturedPieceTo(toPiece);
+      }
+    }
+    return move;
   }
 
   public String toString() {

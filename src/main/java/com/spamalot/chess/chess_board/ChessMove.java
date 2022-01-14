@@ -8,4 +8,6 @@ interface ChessMove {
 
   void setToSquare(int r, int f);
 
+  void setCapturedPieceTo(ChessPiece toPiece);
+
 }

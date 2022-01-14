@@ -34,4 +34,6 @@ interface ChessPiece {
 
   public Color getColor();
 
+  public Type getType();
+
 }

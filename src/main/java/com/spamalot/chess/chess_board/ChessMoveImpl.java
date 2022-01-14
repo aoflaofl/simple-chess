@@ -6,6 +6,7 @@ public class ChessMoveImpl implements ChessMove {
   int fromFile;
   int toRank;
   int toFile;
+  private ChessPiece capturedPiece;
 
   @Override
   public void setPiece(ChessPiece p) {
@@ -32,10 +33,19 @@ public class ChessMoveImpl implements ChessMove {
 
     sb.append((char) (fromFile + 'a'));
     sb.append(fromRank + 1);
-    sb.append('-');
+    if (capturedPiece != null) {
+      sb.append('x');
+    } else {
+      sb.append('-');
+    }
     sb.append((char) (toFile + 'a'));
     sb.append(toRank + 1);
 
     return sb.toString();
+  }
+
+  @Override
+  public void setCapturedPieceTo(ChessPiece toPiece) {
+    capturedPiece = toPiece;
   }
 }
