@@ -4,10 +4,10 @@ class ChessBoardImpl implements ChessBoard {
   private final ChessPiece[][] board = new ChessPieceImpl[8][8];
 
   public ChessBoardImpl(FEN f) {
-    int row = 0;
+    int row = 7;
     for (String rowString : f.pos()) {
       board[row] = parseRowString(rowString);
-      row++;
+      row--;
     }
   }
 
@@ -28,7 +28,7 @@ class ChessBoardImpl implements ChessBoard {
   public String toString() {
 
     StringBuilder sb = new StringBuilder();
-    for (int r = 0; r < 8; r++) {
+    for (int r = 7; r >= 0; r--) {
       for (int f = 0; f < 8; f++) {
         if (board[r][f] != null) {
           sb.append(board[r][f]);

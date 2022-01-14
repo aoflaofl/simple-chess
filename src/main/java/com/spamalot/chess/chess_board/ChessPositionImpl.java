@@ -105,6 +105,9 @@ class ChessPositionImpl implements ChessPosition {
         if (p == null) {
           continue;
         }
+        if (p.getColor() != colorToMove) {
+          continue;
+        }
         System.out.println(p);
         ChessMove m = new ChessMoveImpl();
         m.setPiece(p);

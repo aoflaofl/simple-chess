@@ -31,10 +31,10 @@ public class ChessMoveImpl implements ChessMove {
     sb.append(piece.toString());
 
     sb.append((char) (fromFile + 'a'));
-    sb.append(fromRank);
+    sb.append(fromRank + 1);
     sb.append('-');
     sb.append((char) (toFile + 'a'));
-    sb.append(toRank);
+    sb.append(toRank + 1);
 
     return sb.toString();
   }

@@ -32,4 +32,6 @@ interface ChessPiece {
     BLACK
   }
 
+  public Color getColor();
+
 }
