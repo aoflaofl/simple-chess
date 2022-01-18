@@ -99,9 +99,9 @@ class ChessPositionImpl implements ChessPosition {
   @Override
   public List<ChessMove> generateMoveList() {
     List<ChessMove> al = new ArrayList<>();
-    for (int r = 0; r < 8; r++) {
-      for (int f = 0; f < 8; f++) {
-        ChessPiece p = cb.getPieceAt(r, f);
+    for (int rank = 0; rank < 8; rank++) {
+      for (int file = 0; file < 8; file++) {
+        ChessPiece p = cb.getPieceAt(rank, file);
         if (p == null) {
           continue;
         }
@@ -112,6 +112,15 @@ class ChessPositionImpl implements ChessPosition {
 
         switch (p.getType()) {
           case BISHOP:
+            for (int diffRank = -1; diffRank <= 1; diffRank++) {
+              for (int diffFile = -1; diffFile <= 1; diffFile++) {
+
+                if (Math.abs(diffRank) == 1 && Math.abs(diffFile) == 1) {
+                  al.addAll(generateListOfSlidingMoves(rank, file, diffRank, diffFile));
+                }
+              }
+            }
+
             break;
           case KING:
 
@@ -120,8 +129,14 @@ class ChessPositionImpl implements ChessPosition {
                 if (diffRank == 0 && diffFile == 0) {
                   continue;
                 }
-                ChessMove m = chessMoveDoSquareMove(r, f, p, r + diffRank, f + diffFile);
-                al.add(m);
+
+                if (theSquareIsOnTheBoard(rank + diffRank, file + diffFile)) {
+                  ChessMove m = chessMoveDoSquareMove(rank, file, p, rank + diffRank, file + diffFile,
+                      cb.getPieceAt(rank + diffRank, file + diffFile));
+                  if (m != null) {
+                    al.add(m);
+                  }
+                }
               }
             }
 
@@ -131,8 +146,35 @@ class ChessPositionImpl implements ChessPosition {
           case PAWN:
             break;
           case QUEEN:
+            for (int diffRank = -1; diffRank <= 1; diffRank++) {
+              for (int diffFile = -1; diffFile <= 1; diffFile++) {
+
+                if (diffRank == 0 && diffFile == 0) {
+                  continue;
+                }
+
+                al.addAll(generateListOfSlidingMoves(rank, file, diffRank, diffFile));
+
+              }
+            }
+
             break;
           case ROOK:
+            for (int diffRank = -1; diffRank <= 1; diffRank++) {
+              for (int diffFile = -1; diffFile <= 1; diffFile++) {
+
+                if (diffRank == 0 && diffFile == 0) {
+                  continue;
+                }
+
+                if (Math.abs(diffRank) == 1 && Math.abs(diffFile) == 1) {
+                  continue;
+                }
+
+                al.addAll(generateListOfSlidingMoves(rank, file, diffRank, diffFile));
+
+              }
+            }
             break;
           default:
             break;
@@ -144,12 +186,41 @@ class ChessPositionImpl implements ChessPosition {
     return al;
   }
 
-  private ChessMove chessMoveDoSquareMove(int r, int f, ChessPiece p, int tr, int tf) {
+  private List<ChessMove> generateListOfSlidingMoves(int rank, int file, int diffRank, int diffFile) {
+    ChessPiece p = cb.getPieceAt(rank, file);
+
+    int toRank = rank + diffRank;
+    int toFile = file + diffFile;
+
+    List<ChessMove> alOther = new ArrayList<>();
+
+    while (theSquareIsOnTheBoard(toRank, toFile)) {
+      ChessPiece toPiece = cb.getPieceAt(toRank, toFile);
+
+      ChessMove move = chessMoveDoSquareMove(rank, file, p, toRank, toFile, toPiece);
+      alOther.add(move);
+
+      if (toPiece != null) {
+        break;
+      }
+
+      toRank = toRank + diffRank;
+      toFile = toFile + diffFile;
+    }
+
+    return alOther;
+  }
+
+  private boolean theSquareIsOnTheBoard(int rank, int file) {
+    return !(rank < 0 || rank > 7 || file < 0 || file > 7);
+  }
+
+  private ChessMove chessMoveDoSquareMove(int r, int f, ChessPiece p, int tr, int tf, ChessPiece toPiece) {
     ChessMove move = new ChessMoveImpl();
     move.setPiece(p);
     move.setFromSquare(r, f);
     move.setToSquare(tr, tf);
-    ChessPiece toPiece = cb.getPieceAt(tr, tf);
+
     if (toPiece != null) {
       if (toPiece.getColor() == colorToMove) {
         return null;
