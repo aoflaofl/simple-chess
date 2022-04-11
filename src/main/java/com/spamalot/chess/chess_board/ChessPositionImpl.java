@@ -63,12 +63,10 @@ class ChessPositionImpl implements ChessPosition {
       } else {
         castleWhiteQueen = true;
       }
+    } else if (s == Side.KING) {
+      castleBlackKing = true;
     } else {
-      if (s == Side.KING) {
-        castleBlackKing = true;
-      } else {
-        castleBlackQueen = true;
-      }
+      castleBlackQueen = true;
     }
   }
 
@@ -102,10 +100,7 @@ class ChessPositionImpl implements ChessPosition {
     for (int rank = 0; rank < 8; rank++) {
       for (int file = 0; file < 8; file++) {
         ChessPiece p = cb.getPieceAt(rank, file);
-        if (p == null) {
-          continue;
-        }
-        if (p.getColor() != colorToMove) {
+        if ((p == null) || (p.getColor() != colorToMove)) {
           continue;
         }
         System.out.println(p);
@@ -162,17 +157,9 @@ class ChessPositionImpl implements ChessPosition {
           case ROOK:
             for (int diffRank = -1; diffRank <= 1; diffRank++) {
               for (int diffFile = -1; diffFile <= 1; diffFile++) {
-
-                if (diffRank == 0 && diffFile == 0) {
-                  continue;
+                if (isOrth(diffRank, diffFile)) {
+                  al.addAll(generateListOfSlidingMoves(rank, file, diffRank, diffFile));
                 }
-
-                if (Math.abs(diffRank) == 1 && Math.abs(diffFile) == 1) {
-                  continue;
-                }
-
-                al.addAll(generateListOfSlidingMoves(rank, file, diffRank, diffFile));
-
               }
             }
             break;
@@ -184,6 +171,16 @@ class ChessPositionImpl implements ChessPosition {
       }
     }
     return al;
+  }
+
+  private boolean isOrth(int dr, int df) {
+    if (dr == 0 && df == 0) {
+      return false;
+    }
+    if (Math.abs(dr) == 1 && Math.abs(df) == 1) {
+      return false;
+    }
+    return true;
   }
 
   private List<ChessMove> generateListOfSlidingMoves(int rank, int file, int diffRank, int diffFile) {
@@ -212,7 +209,7 @@ class ChessPositionImpl implements ChessPosition {
   }
 
   private boolean theSquareIsOnTheBoard(int rank, int file) {
-    return !(rank < 0 || rank > 7 || file < 0 || file > 7);
+    return ((rank >= 0) && (rank <= 7) && (file >= 0) && (file <= 7));
   }
 
   private ChessMove chessMoveDoSquareMove(int r, int f, ChessPiece p, int tr, int tf, ChessPiece toPiece) {
@@ -224,13 +221,13 @@ class ChessPositionImpl implements ChessPosition {
     if (toPiece != null) {
       if (toPiece.getColor() == colorToMove) {
         return null;
-      } else {
-        move.setCapturedPieceTo(toPiece);
       }
+      move.setCapturedPieceTo(toPiece);
     }
     return move;
   }
 
+  @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(cb);
